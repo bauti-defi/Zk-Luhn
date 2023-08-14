@@ -1,0 +1,11 @@
+{
+  "name": "luhn-circom",
+  "version": "1.0.0",
+  "description": "Luhn Algorithm circom circuit implementation",
+  "main": "index.js",
+  "author": "bauti.eth",
+  "license": "MIT",
+  "devDependencies": {
+    "snarkjs": "^0.7.0"
+  }
+}

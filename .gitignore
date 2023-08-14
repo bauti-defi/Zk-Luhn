@@ -1,0 +1,9 @@
+node_modules
+checkLuhn_js
+checkLuhn_cpp
+checkLuhn.r1cs
+checkLuhn.sym
+luhn16.r1cs
+luhn16.sym
+luhn16_cpp
+luhn16_js
