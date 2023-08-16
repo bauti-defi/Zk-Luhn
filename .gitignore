@@ -9,4 +9,5 @@ luhn16_cpp
 luhn16_js
 build
 input.json
-out
+contracts
+tests

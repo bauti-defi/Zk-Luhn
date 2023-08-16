@@ -1,8 +1,6 @@
 
 # Makefile
 
-OUTPUT = main
-
 compile:
 	circom circuits/luhn16.circom -o build/ --r1cs --wasm --sym --c
 
@@ -15,5 +13,17 @@ ptau:
 generate:
 	./scripts/ptau-phase2.sh
 
+sol-verifier:
+	snarkjs zkey export solidityverifier build/luhn16_final.zkey contracts/Luhn16Verifier.sol
+
+run-all:
+	make compile
+	make witness
+	make ptau
+	make generate
+	make sol-verifier
+
 clean:
-	rm -f $(OUTPUT).r1cs $(OUTPUT).wasm $(OUTPUT).sym $(OUTPUT).c
+	@echo "Deleting all files in contracts and build directories..."
+	-rm -rf contracts/*
+	-rm -rf build/*
