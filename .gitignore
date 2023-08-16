@@ -7,3 +7,5 @@ luhn16.r1cs
 luhn16.sym
 luhn16_cpp
 luhn16_js
+build
+input.json
