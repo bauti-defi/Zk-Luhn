@@ -10,4 +10,6 @@ luhn16_js
 build
 input.json
 contracts
-tests
+test
+out
+cache
