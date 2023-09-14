@@ -57,6 +57,18 @@ template LessThan(n) {
     out <== 1-n2b.out[n];
 }
 
+// @dev https://github.com/iden3/circomlib/blob/master/circuits/comparators.circom#L116C1-L127C2
+template GreaterThan(n) {
+    signal input in[2];
+    signal output out;
+
+    component lt = LessThan(n);
+
+    lt.in[0] <== in[1];
+    lt.in[1] <== in[0];
+    lt.out ==> out;
+}
+
 // @dev `in` is always [0, 9]
 template Multiplier(amount){
     signal input in;
@@ -94,13 +106,21 @@ template sumator() {
 
 // @dev the length of the sequence. sequence should be composed of whole integers between 0 and 9
 template luhn(length){
-    signal input values[length];
-    signal output products[length];
-    signal output sumation;
+    assert(length > 1);
 
+    signal input values[length];
+    signal products[length];
+    signal sums[length + 1];
+    signal zeros[length];
+    signal output isValid;
+
+    component sumIsZero[length];
+    component sumGreaterThanTen[length];
     component multis[length];
 
-    var sum = 0;
+    // first slot is 0
+    sums[0] <== 0;
+
     for(var i = 0; i < length;i++){
             // 2 1 2 1 2 1 2 ...  
             multis[i] = Multiplier(i % 2 == 0 ? 2 : 1);
@@ -112,33 +132,18 @@ template luhn(length){
             multis[i].in <== values[i];
             products[i] <== multis[i].out;
 
-            sum += multis[i].out;
+            // @dev max value is 18 => 5 bits
+            sumGreaterThanTen[i] = GreaterThan(5);
+            sumGreaterThanTen[i].in[0] <== sums[i] + multis[i].out;
+            sumGreaterThanTen[i].in[1] <== 10;
+
+            sums[i + 1] <== sums[i] + multis[i].out + (sumGreaterThanTen[i].out * -10);
+
+            sumIsZero[i] = IsZero();
+            sumIsZero[i].in <== sums[i+1] - 10;
+
+            zeros[i] <== sumIsZero[i].out;
     }
 
-    sumation <== sum;
+    isValid <== zeros[length-1];
 }
-
-template checkLuhn(length) {
-    signal input values[length];
-    signal output valid;
-
-    component luhn = luhn(length);
-    luhn.values <== values;
-
-    // we know max sum possible is 9 * n
-    // consider a max n of 252, so max value is 9 * 252 = 2268 which needs 12 bits
-    component n2b = Num2Bits(12);
-    n2b.in <== luhn.sumation;
-
-    // Take the least significant 4 bits and convert back to a number
-    component b2n = Bits2Num(4);
-    for (var i = 0; i < 4; i++) {
-        b2n.in[i] <== n2b.out[i];
-    }
-
-    component isZero = IsZero();
-    isZero.in <== b2n.out;
-
-    valid <== isZero.out;
-}
-
