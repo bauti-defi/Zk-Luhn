@@ -1,4 +1,4 @@
-pragma circom 2.0.0;
+pragma circom 2.14.0;
 
 // @dev src: https://github.com/iden3/circomlib/blob/master/circuits/comparators.circom#L24C1-L34C2
 template IsZero() {
@@ -69,6 +69,7 @@ template GreaterThan(n) {
     lt.out ==> out;
 }
 
+
 // @dev `in` is always [0, 9]
 template Multiplier(amount){
     signal input in;
@@ -79,14 +80,13 @@ template Multiplier(amount){
     signal product;
     signal output out;
 
-    product <== amount + in;
+    product <== amount * in;
 
-
-    // @dev max value is 10 => 4 bits
-    component lessThan = LessThan(4);
+    // @dev max value is 18 => 5 bits
+    component lessThan = LessThan(5);
 
     lessThan.in[0] <== product;
-    lessThan.in[1] <== 9;
+    lessThan.in[1] <== 10;
 
     component isZero = IsZero();
     isZero.in <== lessThan.out;

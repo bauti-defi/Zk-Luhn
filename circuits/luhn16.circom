@@ -1,4 +1,4 @@
-pragma circom 2.0.0;
+pragma circom 2.14.0;
 
 include "luhn.circom";
 
